@@ -69,9 +69,9 @@
     {
       "mainColor": {
         "__type__": "cc.Color",
-        "r": 204,
-        "g": 1,
-        "b": 1,
+        "r": 255,
+        "g": 59,
+        "b": 59,
         "a": 255
       },
       "albedoScale": {
@@ -80,7 +80,7 @@
         "y": 1,
         "z": 1
       },
-      "roughness": 0.4,
+      "roughness": 0.923,
       "specularIntensity": 1
     },
     {},
