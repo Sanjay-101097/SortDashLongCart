@@ -42,7 +42,7 @@ export class Box extends Component {
 
     private direction: Vec3 = new Vec3();
     private perpendicular: Vec3 = new Vec3();
-    public dir = 1;
+    public dir = -1;
     idx;
     public isBus: boolean = false;
     Bus
@@ -111,9 +111,9 @@ export class Box extends Component {
         pos.z = Math.round(pos.z * 10) / 10;
         let a = Math.abs(Vec3.dot(this.direction, worldUp))
         //  if (parentIdx >= 0 && parentIdx <= 4) {
-        //     Vec3.cross(this.perpendicular, this.direction, worldUp);
+            Vec3.cross(this.perpendicular, this.direction, worldUp);
         // } else {
-        Vec3.cross(this.perpendicular, this.direction, new Vec3(-1, 0, 0));
+        // Vec3.cross(this.perpendicular, this.direction, new Vec3(-1, 0, 0));
         // }
         Vec3.normalize(this.perpendicular, this.perpendicular);
         this.isanim = true;
