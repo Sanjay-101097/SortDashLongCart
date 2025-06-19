@@ -1,5 +1,5 @@
 
-import { _decorator, AudioClip, AudioSource, BlockInputEvents, BoxCollider, Camera, Component, easing, EventTouch, geometry, Input, input, Material, Node, ParticleSystem, PhysicsSystem, RigidBody, Sprite, SpriteFrame, sys, Tween, tween, TweenAction, TweenSystem, v3, Vec2, Vec3, view } from 'cc';
+import { _decorator, AudioClip, AudioSource, BlockInputEvents, BoxCollider, Camera, Component, easing, EventTouch, geometry, Input, input, Label, Material, Node, ParticleSystem, PhysicsSystem, ProgressBar, RigidBody, Sprite, SpriteFrame, sys, Tween, tween, TweenAction, TweenSystem, v3, Vec2, Vec3, view } from 'cc';
 import { TileCreation } from './TileCreation';
 import { Box } from './Box';
 import { super_html_playable } from './super_html_playable';
@@ -26,6 +26,9 @@ export class GameManager extends Component {
     // [2]
     @property(Node)
     Bolock: Node = null;
+
+    @property(ProgressBar)
+    Progress: ProgressBar = null;
 
     @property(Node)
     Plane: Node = null;
@@ -82,12 +85,17 @@ export class GameManager extends Component {
     wrongCnt = 0;
     isAnimating: boolean;
     Eidx: number = 0;
+    progress = 0.2
 
     public Downnload(): void {
         this.super.download();
     }
 
     protected start(): void {
+
+        this.Progress.progress = this.progress;
+        let brain = this.Progress.node.children[0].children[0];
+        brain.setPosition(300 * this.progress, 0, 0)
         this.audioSource = this.node.getComponent(AudioSource);
 
 
@@ -112,15 +120,15 @@ export class GameManager extends Component {
         const visibleSize = view.getVisibleSizeInPixel();
         const height = window.innerHeight;
         let xdiff = 40;
-        let ydiff = 60;
+        let ydiff = 100;
 
         if (height >= 800) {
             xdiff = 0
-            ydiff = 40
+            ydiff = 0
         }
 
         let nodeToAnimate = this.Canvas.getChildByName("BubbleIdle")
-        nodeToAnimate.setPosition(-178 + xdiff, 172 + ydiff)
+        nodeToAnimate.setPosition(-108 + xdiff, 360 - ydiff)
         const change = tween(nodeToAnimate).delay(0.3)
             .call(() => {
                 nodeToAnimate.getComponent(Sprite).spriteFrame = this.HandSF[1];
@@ -130,11 +138,11 @@ export class GameManager extends Component {
                 nodeToAnimate.getComponent(Sprite).spriteFrame = this.HandSF[0];
             })
         const In = tween(nodeToAnimate)
-            .to(0.8, { position: v3(-8, 172 + ydiff, 1.1) });
+            .to(0.8, { position: v3(-8, 230 + ydiff, 1.1) });
         const Out = tween(nodeToAnimate)
-            .to(0.8, { position: v3(-178 + xdiff, 172 + ydiff, 0) });
+            .to(0.8, { position: v3(-178 + xdiff, 230 + ydiff, 0) });
         tween(nodeToAnimate)
-            .sequence(change, In, change, Out)
+            .sequence(change)
             .union()
             .repeatForever()
             .start();
@@ -260,12 +268,15 @@ export class GameManager extends Component {
                 this.busArr.push(box.node)
                 this.Bidx += 1;
                 if (!this.playing) {
+                    this.progress += 0.1
                     this.playing = true;
                     this.audioSource.playOneShot(this.Audioclips[4], 0.8);
                     let position = this.BusArr[0].children[0].position
+                    let emoji = this.BusArr[0].children[0]
 
                     const offsetX = 0.002 * (this.Bidx < 70 ? 5 : 3) + (this.Eidx == 0 ? 0.001 : 0);
-                    tween(this.BusArr[0].children[0]).delay(0.2).to(0.2, { x: position.x + offsetX }).call(() => {
+                    tween(emoji).delay(0.2).to(0.2, { x: position.x + offsetX }).call(() => {
+                        tween(emoji).to(0.2, { scale:v3(0.023,0.015,0.025) }).to(0.2, { scale:v3(0.015,0.021,0.025) }).to(0.2, { scale:v3(0.02,0.02,0.02) }).start()
                         this.BusArr[0].getComponent(AudioSource).playOneShot(this.Eaudioclips[this.Eidx], 0.8);
                     }).start()
                     this.Eidx += 1;
@@ -279,6 +290,7 @@ export class GameManager extends Component {
                 this.collectorArr.push(box.node)
                 this.Cidx += 1;
                 if (!this.playing) {
+                    this.progress -= 0.1
                     this.playing = true;
                     this.audioSource.playOneShot(this.Audioclips[4], 0.8);
                 }
@@ -313,11 +325,24 @@ export class GameManager extends Component {
             //     this.Cardmovement(node);
             //     this.playing = false;
             // }
-            if (sIdx == 5)
-                this.playing = false;
+            if (sIdx == 5) {
+                if (this.progress > 0 && this.progress < 1) {
+                    tween(this.Progress).to(0.3, { progress: this.progress }).start()
+
+                    // this.Progress.progress = this.progress;
+                    let brain = this.Progress.node.children[0].children[0];
+                    tween(brain).to(0.3, { x: 300 * this.progress }).start()
+                    // brain.setPosition(300 * this.progress, 0, 0)
+                    this.Canvas2.getChildByName("lable").getComponent(Label).string = "AGE : " + (Math.round(this.progress * 100)).toString()
+                    this.playing = false;
+                }
+
+            }
+
 
 
         }, 0.015, 4)
+
     }
 
     playBeforeAnimation(node: Node, onComplete: () => void) {

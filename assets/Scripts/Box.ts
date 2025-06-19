@@ -87,6 +87,7 @@ export class Box extends Component {
 
         }
 
+
         const worldPos = this.node.getWorldPosition();
         const parentIdx = this.node.parent.getSiblingIndex()
         this.node.removeFromParent();
@@ -110,11 +111,12 @@ export class Box extends Component {
         pos.y = Math.round(pos.y * 10) / 10;
         pos.z = Math.round(pos.z * 10) / 10;
         let a = Math.abs(Vec3.dot(this.direction, worldUp))
-        //  if (parentIdx >= 0 && parentIdx <= 4) {
+         if (parentIdx%4 ==0 || parentIdx == 13 || parentIdx == 17 || parentIdx == 21) {
             Vec3.cross(this.perpendicular, this.direction, worldUp);
-        // } else {
-        // Vec3.cross(this.perpendicular, this.direction, new Vec3(-1, 0, 0));
-        // }
+        } else {
+            Vec3.cross(this.perpendicular, this.direction, new Vec3(-1, 0, 0));
+            // Vec3.cross(this.perpendicular, this.direction, worldUp);
+        }
         Vec3.normalize(this.perpendicular, this.perpendicular);
         this.isanim = true;
 
