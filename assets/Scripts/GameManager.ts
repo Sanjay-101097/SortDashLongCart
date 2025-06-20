@@ -584,7 +584,7 @@ export class GameManager extends Component {
     update(deltaTime: number) {
         if (this.enable) {
             this.dt += deltaTime;
-            if (this.dt >= 30 || this.wrongCnt >= 15) {
+            if (this.dt >= 30 || this.wrongCnt >= 3) {
                 this.Canvas.active = true;
                 this.Canvas2.active = false;
                 this.Canvas.children[1].active = false;

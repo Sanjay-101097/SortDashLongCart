@@ -52,15 +52,15 @@ export class TileCreation extends Component {
                 if(i%5==0){
                     selectedColor = this.selectColor();
                 }
-                if(i>=15 && (j==4 || j==5|| j==8|| j==0|| j==9|| j==17|| j==1 || j==9)){
+                if(i>=15 && ( j==5|| j==0|| j==9|| j==17|| j==9)){
                     selectedColor = 0;
                 }
                 if((i>=10 && i <15) && (j==12 || j==16)){
                     selectedColor = 0;
                 }
-                if((i>=0 && i <5) && ( j==4)){
-                    selectedColor = 0;
-                }
+                // if((i>=0 && i <5) && ( j==4)){
+                //     selectedColor = 0;
+                // }
                 // if(i>=15 && (j==6)||((i>=10 && i<15) && (j==2))){
                 //     selectedColor = 4;
                 // }
