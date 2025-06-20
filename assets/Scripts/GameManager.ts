@@ -126,7 +126,9 @@ export class GameManager extends Component {
             xdiff = 0
             ydiff = 0
         }
-
+        let lableNode = this.Canvas.getChildByName("Label");
+        let pos = lableNode.position
+        lableNode.setPosition(pos.x, pos.y - ydiff - 10)
         let nodeToAnimate = this.Canvas.getChildByName("BubbleIdle")
         nodeToAnimate.setPosition(-108 + xdiff, 360 - ydiff)
         const change = tween(nodeToAnimate).delay(0.3)
@@ -202,7 +204,7 @@ export class GameManager extends Component {
                 this.Cardmovement(node)
 
                 this.scheduleOnce(() => {
-                    if (!this.collectoranim)
+                    // if (!this.collectoranim)
                         this.isAnimating = false;
                 }, 0.4)
 
@@ -276,7 +278,14 @@ export class GameManager extends Component {
 
                     const offsetX = 0.002 * (this.Bidx < 70 ? 5 : 3) + (this.Eidx == 0 ? 0.001 : 0);
                     tween(emoji).delay(0.2).to(0.2, { x: position.x + offsetX }).call(() => {
-                        tween(emoji).to(0.2, { scale:v3(0.023,0.015,0.025) }).to(0.2, { scale:v3(0.015,0.021,0.025) }).to(0.2, { scale:v3(0.02,0.02,0.02) }).start()
+                        tween(emoji)
+                        .to(0.1, { scale: v3(0.023, 0.015, 0.025) })
+                        .to(0.1, { scale: v3(0.015, 0.021, 0.025) })
+                        .to(0.1, { scale: v3(0.02, 0.02, 0.02) })
+                        .call(() => {
+                            this.isAnimating = false;
+                            console.log("i'm here")
+                        }).start()
                         this.BusArr[0].getComponent(AudioSource).playOneShot(this.Eaudioclips[this.Eidx], 0.8);
                     }).start()
                     this.Eidx += 1;
@@ -383,126 +392,126 @@ export class GameManager extends Component {
 
 
 
-    CheckCollector(onComplete?: () => void) {
-        if (this.collectorArr.length >= 5) {
-            this.collectoranim = true;
-            this.isAnimating = true;
-            const matchColor = this.buscolor[this.currentBusidx];
-            const matchedIndices = [];
+    // CheckCollector(onComplete?: () => void) {
+    //     if (this.collectorArr.length >= 5) {
+    //         this.collectoranim = true;
+    //         this.isAnimating = true;
+    //         const matchColor = this.buscolor[this.currentBusidx];
+    //         const matchedIndices = [];
 
-            // Find all matching indices (groups of 5) where node name matches
-            for (let i = 0; i <= this.collectorArr.length - 5; i += 5) {
-                const node = this.collectorArr[i];
-                if (node.name === matchColor) {
-                    matchedIndices.push(i);
-                }
-            }
+    //         // Find all matching indices (groups of 5) where node name matches
+    //         for (let i = 0; i <= this.collectorArr.length - 5; i += 5) {
+    //             const node = this.collectorArr[i];
+    //             if (node.name === matchColor) {
+    //                 matchedIndices.push(i);
+    //             }
+    //         }
 
-            // Limit total tiles to move to 10
-            const maxTilesToMove = 10;
-            let tilesMoved = 0;
-            let globalDelay = 0;
-            let totalRemoved = 0;
+    //         // Limit total tiles to move to 10
+    //         const maxTilesToMove = 10;
+    //         let tilesMoved = 0;
+    //         let globalDelay = 0;
+    //         let totalRemoved = 0;
 
-            if (matchedIndices.length > 0) {
-                // Collect all tiles that will be animated now
-                const tilesToAnimate = [];
+    //         if (matchedIndices.length > 0) {
+    //             // Collect all tiles that will be animated now
+    //             const tilesToAnimate = [];
 
-                for (const startIdx of matchedIndices) {
-                    // Skip groups if we have reached limit
-                    if (tilesMoved >= maxTilesToMove) break;
+    //             for (const startIdx of matchedIndices) {
+    //                 // Skip groups if we have reached limit
+    //                 if (tilesMoved >= maxTilesToMove) break;
 
-                    const actualIdx = startIdx - totalRemoved;
-                    const count = Math.min(5, maxTilesToMove - tilesMoved); // Only take needed tiles to reach max 10
-                    const movingTiles = this.collectorArr.splice(actualIdx, count);
+    //                 const actualIdx = startIdx - totalRemoved;
+    //                 const count = Math.min(5, maxTilesToMove - tilesMoved); // Only take needed tiles to reach max 10
+    //                 const movingTiles = this.collectorArr.splice(actualIdx, count);
 
-                    tilesToAnimate.push(...movingTiles);
-                    totalRemoved += count;
-                    tilesMoved += count;
+    //                 tilesToAnimate.push(...movingTiles);
+    //                 totalRemoved += count;
+    //                 tilesMoved += count;
 
-                    globalDelay += count * 0.05;
-                }
+    //                 globalDelay += count * 0.05;
+    //             }
 
-                // Schedule animation for tilesToAnimate
-                tilesToAnimate.forEach((tileNode, idx) => {
-                    this.scheduleOnce(() => {
-                        const tile = tileNode.getComponent(Box);
-                        tile.isBus = true;
-                        tile.fromcollector = true;
-                        tile.frequency = 0.5;
-                        tile.anim(this.Bidx, this.BusArr[this.currentBusidx]);
-                        this.Bidx += 1;
-                        this.Cidx -= 1;
-                        this.audioSource.playOneShot(this.Audioclips[4], 1);
-                    }, idx * 0.05);
-                });
+    //             // Schedule animation for tilesToAnimate
+    //             tilesToAnimate.forEach((tileNode, idx) => {
+    //                 this.scheduleOnce(() => {
+    //                     const tile = tileNode.getComponent(Box);
+    //                     tile.isBus = true;
+    //                     tile.fromcollector = true;
+    //                     tile.frequency = 0.5;
+    //                     tile.anim(this.Bidx, this.BusArr[this.currentBusidx]);
+    //                     this.Bidx += 1;
+    //                     this.Cidx -= 1;
+    //                     this.audioSource.playOneShot(this.Audioclips[4], 1);
+    //                 }, idx * 0.05);
+    //             });
 
-                this.scheduleOnce(() => {
-                    for (const remainingTileNode of this.collectorArr) {
-                        const tile = remainingTileNode.getComponent(Box);
-                        tile.reset(this.collectorArr.indexOf(remainingTileNode));
-                    }
-                }, 0.9)
+    //             this.scheduleOnce(() => {
+    //                 for (const remainingTileNode of this.collectorArr) {
+    //                     const tile = remainingTileNode.getComponent(Box);
+    //                     tile.reset(this.collectorArr.indexOf(remainingTileNode));
+    //                 }
+    //             }, 0.9)
 
 
-                // this.scheduleOnce(() => {
-                //     if (this.Bidx >= 10) {
-                //         this.Bidx = 0;
-                //         const Fbus = this.BusArr[this.currentBusidx];
-                //         let Lbus = this.currentBusidx === 1 ? 0 :
-                //             this.currentBusidx === 2 ? 1 :
-                //                 this.currentBusidx + 2;
+    //             // this.scheduleOnce(() => {
+    //             //     if (this.Bidx >= 10) {
+    //             //         this.Bidx = 0;
+    //             //         const Fbus = this.BusArr[this.currentBusidx];
+    //             //         let Lbus = this.currentBusidx === 1 ? 0 :
+    //             //             this.currentBusidx === 2 ? 1 :
+    //             //                 this.currentBusidx + 2;
 
-                //         tween(Fbus)
-                //             .to(0.15, { position: new Vec3(-6.096, 4.751, -14.643) }, { easing: 'quadInOut' })
-                //             .call(() => {
-                //                 this.currentBusidx = (this.currentBusidx + 1) % 3;
-                //                 const newBus = this.BusArr[this.currentBusidx];
+    //             //         tween(Fbus)
+    //             //             .to(0.15, { position: new Vec3(-6.096, 4.751, -14.643) }, { easing: 'quadInOut' })
+    //             //             .call(() => {
+    //             //                 this.currentBusidx = (this.currentBusidx + 1) % 3;
+    //             //                 const newBus = this.BusArr[this.currentBusidx];
 
-                //                 tween(newBus)
-                //                     .to(0.15, { position: new Vec3(4.386, 4.751, -4.161) }, { easing: 'quadInOut' })
-                //                     .call(() => {
-                //                         this.Bidx = 0;
-                //                         this.CheckCollector(() => {
-                //                             this.isAnimating = false;
-                //                             this.collectoranim = false;
-                //                             onComplete?.();
-                //                         });
+    //             //                 tween(newBus)
+    //             //                     .to(0.15, { position: new Vec3(4.386, 4.751, -4.161) }, { easing: 'quadInOut' })
+    //             //                     .call(() => {
+    //             //                         this.Bidx = 0;
+    //             //                         this.CheckCollector(() => {
+    //             //                             this.isAnimating = false;
+    //             //                             this.collectoranim = false;
+    //             //                             onComplete?.();
+    //             //                         });
 
-                //                         Fbus.setPosition(10.021, 4.751, 1.474);
-                //                         Fbus.children?.forEach(child => child.destroy());
-                //                     })
-                //                     .start();
+    //             //                         Fbus.setPosition(10.021, 4.751, 1.474);
+    //             //                         Fbus.children?.forEach(child => child.destroy());
+    //             //                     })
+    //             //                     .start();
 
-                //                 tween(this.BusArr[Lbus])
-                //                     .to(0.15, { position: new Vec3(7.08, 4.751, -1.467) }, { easing: 'quadInOut' })
-                //                     .start();
-                //             })
-                //             .start();
-                //     } else {
-                //         this.CheckCollector(() => {
-                //             this.isAnimating = false;
-                //             this.collectoranim = false;
-                //             onComplete?.();
-                //         });
-                //     }
-                // }, globalDelay + 0.5);
-            } else {
-                // No matches found: reset all tiles
-                for (let i = 0; i < this.collectorArr.length; i++) {
-                    const tile = this.collectorArr[i].getComponent(Box);
-                    tile.reset(i);
-                }
-                this.isAnimating = false;
-                this.collectoranim = false;
-                onComplete?.();
-            }
-        } else {
-            this.isAnimating = false;
-            this.collectoranim = false;
-            onComplete?.();
-        }
-    }
+    //             //                 tween(this.BusArr[Lbus])
+    //             //                     .to(0.15, { position: new Vec3(7.08, 4.751, -1.467) }, { easing: 'quadInOut' })
+    //             //                     .start();
+    //             //             })
+    //             //             .start();
+    //             //     } else {
+    //             //         this.CheckCollector(() => {
+    //             //             this.isAnimating = false;
+    //             //             this.collectoranim = false;
+    //             //             onComplete?.();
+    //             //         });
+    //             //     }
+    //             // }, globalDelay + 0.5);
+    //         } else {
+    //             // No matches found: reset all tiles
+    //             for (let i = 0; i < this.collectorArr.length; i++) {
+    //                 const tile = this.collectorArr[i].getComponent(Box);
+    //                 tile.reset(i);
+    //             }
+    //             this.isAnimating = false;
+    //             this.collectoranim = false;
+    //             onComplete?.();
+    //         }
+    //     } else {
+    //         this.isAnimating = false;
+    //         this.collectoranim = false;
+    //         onComplete?.();
+    //     }
+    // }
 
     private worldPositions;
     sound: boolean = true;
